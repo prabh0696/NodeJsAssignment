@@ -74,7 +74,41 @@ app.post("/loginuser/",(req,res,next)=>{
     });    
 });
 
+app.post('/profile/',(req,res,next)=>{
 
+    var data = req.body;
+    var name = data.name;
+    var email = data.email;
+    var phone = data.phone;
+    var address = data.address;
+    var city = data.city;
+    var province = data.province;
+    var country = data.country;
+    var postalcode = data.postalcode;
+
+    connection.query("SELECT * FROM user_profile WHERE email = ?",[email],function(err,result,fields){
+        connection.on('error',(err)=>{
+            console.log("[MYSQL ERROR]",err);
+        });
+
+        if(result && result.length){
+            res.json("Profile data for this User already Exists......");
+        }
+        else{
+            var insert = "INSERT INTO user_profile (name,email,phone,address,city,province,country,postalcode) values(?,?,?,?,?,?,?,?)";
+            var values = [name,email,phone,address,city,province,country,postalcode];
+
+            console.log("executing: "+insert);
+            connection.query(insert,values,(err,result,fields)=>{
+                connection.on('error',(err)=>{
+                    console.log("[MYSQL ERROR]",err);
+            });
+            res.json(name+"'s profile data has been saved successfully");
+            console.log("Profile data saved Successfully");
+        });
+        }
+    });
+});
 
 
 
