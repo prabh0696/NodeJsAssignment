@@ -110,7 +110,40 @@ app.post('/profile/',(req,res,next)=>{
     });
 });
 
+app.post('/addproduct/',(req,res,next)=>{
 
+    var data = req.body;
+    var proid = data.proid;
+    var category = data.category;
+    var subcategory = data.subcategory;
+    var name = data.name;
+    var colors = data.colors;
+    var price = data.price;
+    
+
+    connection.query("SELECT * FROM add_product WHERE proid = ?",[proid],function(err,result,fields){
+        connection.on('error',(err)=>{
+            console.log("[MYSQL ERROR]",err);
+        });
+
+        if(result && result.length){
+            res.json("Product with same serial number already exists");
+        }
+        else{
+            var insert = "INSERT INTO add_product (proid,category,subcategory,name,colors,price) values(?,?,?,?,?,?)";
+            var values = [proid,category,subcategory,name,colors,price];
+
+            console.log("executing: "+insert);
+            connection.query(insert,values,(err,result,fields)=>{
+                connection.on('error',(err)=>{
+                    console.log("[MYSQL ERROR]",err);
+            });
+            res.json("Product with Serial Number "+proid+" has been saved successfully");
+            console.log("New Product saved Successfully");
+        });
+        }
+    });
+});
 
 var server = app.listen(3000,()=>{
     console.log("Server Running at http://localhost:3000");
